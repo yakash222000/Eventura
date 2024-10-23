@@ -6,25 +6,23 @@ import com.eventura.DTO.Request.LoginRequestDTO;
 import com.eventura.DTO.Response.LoginResponseDTO;
 import com.eventura.DTO.TicketDTO;
 import com.eventura.DTO.UserDTO;
-import com.eventura.Exception.EventNotFoundException;
-import com.eventura.Exception.NoSeatAvailableException;
-import com.eventura.Exception.TicketNotFoundException;
-import com.eventura.Exception.UserNotFoundException;
+import com.eventura.Exception.*;
 import com.eventura.Mapper.EventMapper;
 import com.eventura.Mapper.TicketMapper;
 import com.eventura.Mapper.UserMapper;
-import com.eventura.Model.Event;
-import com.eventura.Model.Ticket;
-import com.eventura.Model.User;
+import com.eventura.Model.*;
 import com.eventura.Repository.EventRepository;
+import com.eventura.Repository.RoleRepository;
 import com.eventura.Repository.TicketRepository;
 import com.eventura.Repository.UserRepository;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@AllArgsConstructor
 public class UserServiceImpl implements UserService {
 
     private final UserMapper userMapper;
@@ -39,25 +37,27 @@ public class UserServiceImpl implements UserService {
 
     private final TicketMapper ticketMapper;
 
-    public UserServiceImpl(UserRepository userRepository,
-                           UserMapper userMapper,
-                           EventRepository eventRepository,
-                           EventMapper eventMapper,
-                           TicketMapper ticketMapper,
-                           TicketRepository ticketRepository
-                            ) {
-        this.userRepository = userRepository;
-        this.userMapper = userMapper;
-        this.eventRepository = eventRepository;
-        this.eventMapper = eventMapper;
-        this.ticketRepository = ticketRepository;
-        this.ticketMapper = ticketMapper;
-    }
+    private final RoleRepository roleRepository;
+
+
+
 
     @Override
-    public UserDTO createUser(UserDTO userDto) {
+    public UserDTO createUser(UserDTO userDto, String roleName) {
+        if (userRepository.existsByEmail(userDto.getEmail())) {
+            throw new DuplicateResourceException("Email is already in use.");
+        }
+        if (userRepository.existsByPhoneNumber(userDto.getPhoneNumber())) {
+            throw new DuplicateResourceException("Phone number is already in use.");
+        }
+
         User user = userMapper.toEntity(userDto);
+
+        Role role = roleRepository.findByRoleName(roleName);
+        user.getRoles().add(role);
+
         User savedUser = userRepository.save(user);
+
         return userMapper.toDTO(savedUser);
     }
 
@@ -76,7 +76,6 @@ public class UserServiceImpl implements UserService {
         existingUser.setPassword(userDto.getPassword());
         existingUser.setEmail(userDto.getEmail());
         existingUser.setPhoneNumber(userDto.getPhoneNumber());
-        existingUser.setRole(userDto.getRole());
 
         User savedUser = userRepository.save(existingUser);
 
@@ -137,7 +136,7 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("User not found with id " + userId));
         Ticket ticket = null;
         for(Ticket t : event.getTickets()){
-            if(seatType.equals(t.getSeat().getSeatType())){
+            if(seatType.equals(t.getSeat())){
                 ticket = t;
                 event.getTickets().remove(t);
             }

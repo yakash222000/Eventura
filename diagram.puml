@@ -1,0 +1,72 @@
+@startuml
+
+package "Class Diagram" {
+
+    class Event {
+        +long eventId
+        +String eventName
+        +String eventDescription
+        +LocalDateTime startTime
+        +LocalDateTime endTime
+        +EventType eventType
+    }
+
+    class Venue {
+        +long venueId
+        +String venueName
+        +String venueLocation
+        +int venueCapacity
+    }
+
+    class User {
+        +long userId
+        +String userName
+        +String email
+        +String password
+        +String phoneNumber
+        +Date registrationDate
+    }
+
+    class Ticket {
+        +long ticketId
+        +Event event
+        +User user
+        +Seat seat
+        +String seatNumber
+        +long price
+        +String status
+        +Date purchaseDate
+    }
+
+    class EventType {
+        +String typeName
+        +String description
+    }
+
+    class Payment {
+        +long paymentId
+        +double amount
+        +String paymentMethod
+        +Timestamp paymentTime
+    }
+
+    class Role {
+        +long id
+        +String roleName
+    }
+
+    Event --> Venue : has >
+    Event --> User : registered by >
+    Event --> Ticket : has >
+    EventType --> Event : classifies >
+    Ticket --> User : purchased by >
+    Ticket --> Event : for >
+    Payment --> Ticket : processes >
+    User --> Role : has >
+    User --> Ticket : has >
+    User --> Event : participates in >
+    Venue --> Event : hosts >
+    Role --> User : assigned to >
+}
+
+@enduml

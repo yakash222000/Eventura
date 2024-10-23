@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 public interface UserService {
-    UserDTO createUser(UserDTO userDto);
+    UserDTO createUser(UserDTO userDto, String roleName);
 
     LoginResponseDTO loginUser(LoginRequestDTO loginRequestDTO);
 

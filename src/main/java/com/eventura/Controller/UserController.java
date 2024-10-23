@@ -1,16 +1,11 @@
 package com.eventura.Controller;
-
-import com.eventura.DTO.Request.BuyTicketDTO;
 import com.eventura.DTO.Request.ChangePasswordDTO;
 import com.eventura.DTO.Request.LoginRequestDTO;
 import com.eventura.DTO.Response.LoginResponseDTO;
 import com.eventura.DTO.TicketDTO;
 import com.eventura.DTO.UserDTO;
-import com.eventura.Model.User;
-import com.eventura.Repository.UserRepository;
 import com.eventura.Service.UserService;
 import jakarta.validation.Valid;
-import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,25 +21,23 @@ public class UserController {
 
 
     private final UserService userService;
-    private final UserRepository userRepository;
 
     @Autowired
-    public UserController(UserService userService, UserRepository userRepository) {
+    public UserController(UserService userService) {
         this.userService = userService;
-        this.userRepository = userRepository;
     }
 
-    @PostMapping("/register")
-    public ResponseEntity<UserDTO> register(@Valid @RequestBody UserDTO userDTO) {
-        UserDTO createdUser = userService.createUser(userDTO);
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdUser);
-    }
+//    @PostMapping("/register")
+//    public ResponseEntity<UserDTO> register(@Valid @RequestBody UserDTO userDTO) {
+//        UserDTO createdUser = userService.createUser(userDTO);
+//        return ResponseEntity.status(HttpStatus.CREATED).body(createdUser);
+//    }
 
-    @PostMapping("/login")
-    public ResponseEntity<LoginResponseDTO> login(@Validated @RequestBody LoginRequestDTO loginRequestDTO) {
-        LoginResponseDTO loginResponseDTO = userService.loginUser(loginRequestDTO);
-        return ResponseEntity.status(HttpStatus.OK).body(loginResponseDTO);
-    }
+//    @PostMapping("/login")
+//    public ResponseEntity<LoginResponseDTO> login(@Validated @RequestBody LoginRequestDTO loginRequestDTO) {
+//        LoginResponseDTO loginResponseDTO = userService.loginUser(loginRequestDTO);
+//        return ResponseEntity.status(HttpStatus.OK).body(loginResponseDTO);
+//    }
 
     @GetMapping("/{id}")
     public ResponseEntity<UserDTO> getUserProfile(@PathVariable long id) {

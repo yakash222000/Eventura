@@ -19,7 +19,6 @@ public class Ticket {
     @ManyToOne
     private User user;
 
-    @OneToOne(cascade = CascadeType.ALL)
     private Seat seat;
 
     private String seatNumber;

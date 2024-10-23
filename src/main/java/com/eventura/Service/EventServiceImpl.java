@@ -5,10 +5,12 @@ import com.eventura.Exception.EventNotFoundException;
 import com.eventura.Mapper.EventMapper;
 import com.eventura.Mapper.TicketMapper;
 import com.eventura.Mapper.UserMapper;
+import com.eventura.Mapper.VenueMapper;
 import com.eventura.Model.Event;
 import com.eventura.Repository.EventRepository;
 import com.eventura.Repository.TicketRepository;
 import com.eventura.Repository.UserRepository;
+import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
@@ -17,6 +19,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Service
 public class EventServiceImpl implements EventService {
     private final TicketRepository ticketRepository;
     private final TicketMapper ticketMapper;
@@ -24,12 +27,14 @@ public class EventServiceImpl implements EventService {
     private final EventRepository eventRepository;
     private final EventMapper eventMapper;
     private final UserMapper userMapper;
+    private final VenueMapper venueMapper;
     public EventServiceImpl(TicketRepository ticketRepository,
                              TicketMapper ticketMapper,
                              UserRepository userRepository,
                              EventRepository eventRepository,
                              EventMapper eventMapper,
-                             UserMapper userMapper
+                             UserMapper userMapper,
+                             VenueMapper venueMapper
     ){
         this.ticketRepository = ticketRepository;
         this.ticketMapper = ticketMapper;
@@ -37,6 +42,7 @@ public class EventServiceImpl implements EventService {
         this.eventRepository = eventRepository;
         this.eventMapper = eventMapper;
         this.userMapper = userMapper;
+        this.venueMapper = venueMapper;
     }
 
 
@@ -50,6 +56,12 @@ public class EventServiceImpl implements EventService {
     @Override
     public EventDTO updateEvent(EventDTO eventDTO) {
         Event event = eventMapper.toEntity(eventDTO);
+        event.setEventName(eventDTO.getEventName());
+        event.setVenue(venueMapper.toEntity(eventDTO.getVenueDTO()));
+        event.setEventType(eventDTO.getEventType());
+        event.setEventDescription(eventDTO.getEventDescription());
+        event.setStartTime(eventDTO.getStartTime());
+        event.setEndTime(eventDTO.getEndTime());
         eventRepository.save(event);
         return eventMapper.toDTO(event);
     }
