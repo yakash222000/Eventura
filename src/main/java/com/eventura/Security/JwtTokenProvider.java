@@ -1,12 +1,16 @@
 package com.eventura.Security;
 
 import io.jsonwebtoken.*;
+import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.security.Keys;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
+import javax.crypto.SecretKey;
+import java.security.Key;
 import java.util.Date;
-import java.util.function.Function;
+
 
 @Component
 public class JwtTokenProvider {
@@ -23,12 +27,22 @@ public class JwtTokenProvider {
                 .setSubject(username)
                 .setIssuedAt(now)
                 .setExpiration(expiryDate)
-                .signWith(SignatureAlgorithm.HS512, jwtSecret)
+                .signWith(key(), SignatureAlgorithm.HS512)
                 .compact();
     }
 
+    private Key key(){
+        return Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtSecret));
+    }
+
     public String getUsernameFromToken(String token) {
-        return Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token).getBody().getSubject();
+
+        Claims claims = Jwts.parser()
+                .setSigningKey(key()) // Set the signing key
+                .parseClaimsJws(token) // Parse and verify the token
+                .getBody(); // Get the claims body
+
+        return claims.getSubject();
     }
 
     public boolean validateToken(String token) {

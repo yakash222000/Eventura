@@ -16,6 +16,7 @@ import com.eventura.Repository.RoleRepository;
 import com.eventura.Repository.TicketRepository;
 import com.eventura.Repository.UserRepository;
 import lombok.AllArgsConstructor;
+import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -53,7 +54,7 @@ public class UserServiceImpl implements UserService {
 
         User user = userMapper.toEntity(userDto);
 
-        Role role = roleRepository.findByRoleName(roleName);
+        Role role = roleRepository.findByRoleName(roleName).orElseThrow(()->new RuntimeException("Role " + roleName + " not found"));
         user.getRoles().add(role);
 
         User savedUser = userRepository.save(user);
